@@ -3,6 +3,7 @@ var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_we
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
+    console.log(data);
 // Once we get a response, send the data.features object to the createFeatures function
     createFeatures(data.features);
 });
@@ -13,7 +14,10 @@ function createFeatures (eqData){
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer){
         layer.bindPopup("<h3>" + "<p>Location :"+feature.properties.place +"</p>"+
-        "</h3><hr><p>" + "<p> Date: "+new Date(feature.properties.time)+"</p>" + "</p>"+ "<p> Magnitude: "+ feature.properties.mag+ "</p>");
+        "</h3><hr><p>" 
+        + "<p> Date: "+new Date(feature.properties.time)+"</p>" + "</p>"
+        + "<p> Magnitude: "+ feature.properties.mag+ "</p>"
+        + "<p> Depth of Earth: "+feature.geometry.coordinates[2]+"</p>");
     }
 
     // Create a GeoJSON layer containing the features array on the earthquakeData object
@@ -38,6 +42,8 @@ function createFeatures (eqData){
         accessToken: API_KEY
     }).addTo(myMap);
     
+    
+    // Variables for layer Control 
     var base = {Streetmap: streetMap};
     var overlayMaps = {Earthquakes: earthquakes};
 
