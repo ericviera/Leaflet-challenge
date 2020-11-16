@@ -8,25 +8,43 @@ d3.json(queryUrl, function(data) {
     createFeatures(data.features);
 });
 
-function createFeatures (eqData){
+function markerColor(mag) {
+  if (mag <= 1) {
+      return "green";} 
+    else if (mag <= 2) {
+      return "yellowgreen";} 
+    else if (mag <= 3) {
+      return "yellow";} 
+    else if (mag <= 4) {
+      return "orange";} 
+     else if (mag <= 5) {
+      return "orangered";} 
+    else {
+      return "darkred";}}
 
+function markerSize(mag) {return mag * 15000;}
+
+function createFeatures (eqData){
+    var earthquakes = L.geoJSON(eqData, {onEachFeature: 
     // Define a function we want to run once for each feature in the features array
     // Give each feature a popup describing the place and time of the earthquake
     function onEachFeature(feature, layer){
-        layer.bindPopup("<h3>" + "<p>Location :"+feature.properties.place +"</p>"+
-        "</h3><hr><p>" 
+        layer.bindPopup("<h3>" + "<p>Location :"+feature.properties.place +"</p>"
+        +"</h3><hr><p>" 
         + "<p> Date: "+new Date(feature.properties.time)+"</p>" + "</p>"
         + "<p> Magnitude: "+ feature.properties.mag+ "</p>"
-        + "<p> Depth of Earth: "+feature.geometry.coordinates[2]+"</p>");
-    }
-
-    // Create a GeoJSON layer containing the features array on the earthquakeData object
-    // Run the onEachFeature function once for each piece of data in the array
-    var earthquakes = L.geoJSON(eqData, {onEachFeature: onEachFeature});
-
+        + "<p> Depth of Earth: "+feature.geometry.coordinates[2]+"</p>");}, 
+        pointToLayer: function (feature, latlng) {
+        return new L.circle(latlng,
+            {radius: markerSize(feature.properties.mag),
+            fillColor: markerColor(feature.properties.mag),
+            fillOpacity: 1,
+            stroke: false})}});
+    
+//-------------------------------------------------------------------
 /*     // Sending our earthquakes layer to the createMap function
     createMap(earthquakes); */
-
+//--------------------------------------------------------------------
     // Basic Map
     var myMap = L.map("map", {
     center: [37.09, -95.71],
@@ -53,9 +71,41 @@ function createFeatures (eqData){
     L.control.layers(base,overlayMaps, {
         collapsed: false
     }).addTo(myMap);
+};
+
+//-----------------------------------------------------------------
+// Adding Legend
+
+ /* var legend = L.control({position: "bottomright"});
+
+  legend.onAdd = function () {
+   var div = L.DomUtil.create("div", "info legend");
+
+ 
+    var colors = ["green","yellowgreen","yellow", "orange", "orangered", "red" ]
+    var labels = []
+
+    div.innerHTML = '<div class="labels"><div class="min">' + limits[0] + '</div> \
+			<div class="max">' + limits[limits.length - 1] + '</div></div>'
+
+    limits.forEach(function (limit, index) {
+      labels.push('<li style="background-color: ' + colors[index] + '"></li>')
+    })
+
+    div.innerHTML += '<ul>' + labels.join('') + '</ul>'
+
+      return div;
+  }
+  
+  legend.addTo(myMap); */
+
+    
 
 
-}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+// Extra to add more layers
+
 
 /* function createMap(earthquakes) {
 
